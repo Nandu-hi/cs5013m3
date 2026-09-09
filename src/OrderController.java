@@ -2,6 +2,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface GetMapping {
+    String value();
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface PostMapping {
+    String value();
+}
 
 /**
  * A plain-Java controller. 
@@ -30,15 +46,22 @@ public class OrderController {
 
     /** GET /orders/{id} -- return the matching order, or null if
      *  none exists. TODO: complete with Copilot. */
+    @GetMapping("/orders/{id}")
     public Order getOrderById(long id) {
         // TODO: look up id in `store` and return it (or null).
-        throw new UnsupportedOperationException("TODO: complete via AI");
+        return store.get(id);
     }
 
     /** POST /orders -- create a new order, assign it the next id,
      *  store it, and return it. TODO: complete with Copilot. */
+    @PostMapping("/orders")
     public Order createOrder(String item, int qty) {
         // TODO: validate item/qty, allocate nextId, put in store, return.
-        throw new UnsupportedOperationException("TODO: complete via AI");
+        if (item == null || item.isEmpty() || qty <= 0) {
+            throw new IllegalArgumentException("Invalid item or quantity");
+        }
+        Order order = new Order(nextId++, item, qty);
+        store.put(order.id(), order);
+        return order;
     }
 }
